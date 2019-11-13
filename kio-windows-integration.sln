@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29503.13
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kio-windows-integration", "kio-windows-integration\kio-windows-integration.csproj", "{F762E23D-2B91-40E6-9460-6C0A21B3546E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|x64 = Debug|x64
+		Release|Any CPU = Release|Any CPU
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F762E23D-2B91-40E6-9460-6C0A21B3546E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F762E23D-2B91-40E6-9460-6C0A21B3546E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F762E23D-2B91-40E6-9460-6C0A21B3546E}.Debug|x64.ActiveCfg = Debug|x64
+		{F762E23D-2B91-40E6-9460-6C0A21B3546E}.Debug|x64.Build.0 = Debug|x64
+		{F762E23D-2B91-40E6-9460-6C0A21B3546E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F762E23D-2B91-40E6-9460-6C0A21B3546E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F762E23D-2B91-40E6-9460-6C0A21B3546E}.Release|x64.ActiveCfg = Release|x64
+		{F762E23D-2B91-40E6-9460-6C0A21B3546E}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E2B5B5FC-FD7C-4095-A53C-208AC2342775}
+	EndGlobalSection
+EndGlobal
