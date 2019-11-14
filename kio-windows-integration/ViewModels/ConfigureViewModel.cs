@@ -1,12 +1,17 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO.Ports;
 using System.Linq;
 using System.Threading.Tasks;
 using Caliburn.Micro;
+using kio_windows_integration.Events;
+using kio_windows_integration.Exceptions;
 using kio_windows_integration.Helpers;
 using kio_windows_integration.Models;
 using kio_windows_integration.Services;
+using static System.Math;
+using static kio_windows_integration.Models.KeyboardConnectHelper;
 
 namespace kio_windows_integration.ViewModels
 {
@@ -16,6 +21,7 @@ namespace kio_windows_integration.ViewModels
         private readonly SerialPort keyboardSerialPort;
         private readonly ErrorMangementHelper errorHelper;
         private readonly ISet<ApplicationLayerMapping> appWideAppLayerMappings;
+        private readonly IEventAggregator eventAggregator;
 
         private IEnumerable<int> availableLayers;
 
@@ -58,13 +64,14 @@ namespace kio_windows_integration.ViewModels
         public ObservableCollection<AppLayerMappingItem> AppLayerMappings { get; } =
             new ObservableCollection<AppLayerMappingItem>();
 
-        public ConfigureViewModel(SerialPort keyboardSerialPort, ErrorMangementHelper errorHelper,
+        public ConfigureViewModel(SerialPort keyboardSerialPort, IEventAggregator eventAggregator, ErrorMangementHelper errorHelper,
             PersistenceService persistenceService, ISet<ApplicationLayerMapping> appWideAppLayerMappings)
         {
             this.errorHelper = errorHelper;
             this.keyboardSerialPort = keyboardSerialPort;
             this.appWideAppLayerMappings = appWideAppLayerMappings;
             this.persistenceService = persistenceService;
+            this.eventAggregator = eventAggregator;
         }
 
         protected override async void OnInitialize()
@@ -74,11 +81,18 @@ namespace kio_windows_integration.ViewModels
             var apps = await WinApi.QueryInstalledProgramsAsync();
             InstalledApps = new ObservableCollection<ApplicationMetaInf>(apps);
 
-            var maxLayer = await
-                errorHelper.NotifyWholeAppOnKeyboardCommunicationLoss(
-                    async () => await WindowsIntegrationFocusApi.TotalLayerCountAsync(keyboardSerialPort),
-                    Task.FromResult(-1));
-            AvailableLayers = Enumerable.Range(0, maxLayer - 1);
+            var maxLayer = -1;
+            try
+            {
+                maxLayer = await WindowsIntegrationFocusApi.TotalLayerCountAsync(keyboardSerialPort);
+            }
+            catch (Exception e) when (e is WindowsIntegrationFocusApiException || e is KeyboardConnectException)
+            {
+                Log.Error("Failed while communicating with keyboard", e);
+                eventAggregator.PublishOnUIThread(new SerialPortOffline());
+            }
+
+            AvailableLayers = Enumerable.Range(0, Max(0, maxLayer - 1));
 
             await LoadMappings();
         }
@@ -89,11 +103,22 @@ namespace kio_windows_integration.ViewModels
         private async Task LoadMappings()
         {
             var mappings = await persistenceService.load();
-            
+
             AppLayerMappingsToAppWide(mappings);
-            
+
             AppLayerMappings.Clear();
-            var uiMappings = mappings.Select(mapping => mapping.ToUIModel(InstalledApps));
+            var uiMappings = mappings.Select(mapping =>
+            {
+                var metaInf = InstalledApps.FirstOrDefault(meta => meta.ImageName == mapping.ProcessName);
+                if (metaInf == null && mapping.ExePath != null)
+                {
+                    var computedMetaInf = new ApplicationMetaInf(mapping.ExePath);
+                    InstalledApps.AddOrReplaceOnUniqueImageName(computedMetaInf); // Update installed apps
+                    metaInf = computedMetaInf;
+                }
+
+                return mapping.ToUIModel(metaInf);
+            });
             foreach (var item in uiMappings)
             {
                 AppLayerMappings.Add(item);
@@ -107,8 +132,12 @@ namespace kio_windows_integration.ViewModels
         private async Task PersistMappings()
         {
             var mappings = new HashSet<ApplicationLayerMapping>(
-                AppLayerMappings.Select(item => item.ToModel()));
-            
+                AppLayerMappings.Select(item =>
+                {
+                    var metaInf = InstalledApps.FirstOrDefault(meta => meta.ImageName == item.ImageName);
+                    return item.ToModel(metaInf);
+                }));
+
             // Persist to the application
             AppLayerMappingsToAppWide(mappings);
 

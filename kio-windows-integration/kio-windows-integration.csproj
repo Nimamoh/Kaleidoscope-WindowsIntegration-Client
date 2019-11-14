@@ -100,6 +100,7 @@
     </Reference>
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Management" />
     <Reference Include="System.Memory, Version=4.0.1.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51">
       <HintPath>..\packages\System.Memory.4.5.3\lib\netstandard2.0\System.Memory.dll</HintPath>
@@ -158,6 +159,7 @@
     <Compile Include="Events\SuccessOnKeyboardConnect.cs" />
     <Compile Include="Exceptions\WindowsIntegrationFocusApiException.cs" />
     <Compile Include="Helpers\ErrorMangementHelper.cs" />
+    <Compile Include="Helpers\ImageHelpers.cs" />
     <Compile Include="Models\ApplicationLayerMapping.cs" />
     <Compile Include="Models\ApplicationMetaInf.cs" />
     <Compile Include="Services\FocusClient.cs" />

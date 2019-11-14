@@ -5,19 +5,27 @@
     /// </summary>
     public class ApplicationLayerMapping
     {
+        /// <summary>
+        /// Optional executable path corresponding to the process.
+        /// This property should only be used to compute additionnal informations
+        /// about te mapping, it is not mandatory.
+        /// </summary>
+        public string ExePath { get; set; }
         public string ProcessName { get; set; }
         public int Layer { get; set; }
 
         public ApplicationLayerMapping()
         {
+            ExePath = "";
             ProcessName = "";
             Layer = -1;
         }
 
-        public ApplicationLayerMapping(string processName, int layer)
+        public ApplicationLayerMapping(string processName, int layer, string exePath = "")
         {
             ProcessName = processName;
             Layer = layer;
+            ExePath = exePath;
         }
 
         protected bool Equals(ApplicationLayerMapping other)

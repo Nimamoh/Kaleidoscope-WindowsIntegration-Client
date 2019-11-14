@@ -52,7 +52,6 @@
                             <TextBlock Text="{Binding AppName}" VerticalAlignment="Center" />
                         </StackPanel>
 
-
                         <materialDesign:PackIcon
                             Grid.Column="1"
                             Kind="ArrowLeftRightBold" Margin="20 0 20 0" VerticalAlignment="Center" />
@@ -89,6 +88,7 @@
             <Grid.RowDefinitions>
                 <RowDefinition />
                 <RowDefinition />
+                <RowDefinition />
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition />
@@ -97,22 +97,35 @@
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
 
-            <ComboBox
-                Grid.Row="0" Grid.Column="0" Margin="0 0 10 0"
-                ItemsSource="{Binding InstalledApps}"
-                SelectedIndex="{Binding AppLayerMappingInEdition.SelectedApp}"
-                VerticalAlignment="Center" HorizontalAlignment="Right"
-                MinWidth="100">
-                <ComboBox.ItemTemplate>
-                    <DataTemplate>
-                        <StackPanel Orientation="Horizontal">
-                            <Image Source="{Binding Icon}" MaxWidth="20" MaxHeight="20" Margin="0 0 10 0"
-                                   VerticalAlignment="Center" />
-                            <TextBlock Text="{Binding Name}" Margin="0 0 20 0" VerticalAlignment="Center" />
-                        </StackPanel>
-                    </DataTemplate>
-                </ComboBox.ItemTemplate>
-            </ComboBox>
+            <StackPanel
+                Grid.Row="0" Grid.Column="0" Margin="0 0 10 0">
+                <ComboBox
+                    ItemsSource="{Binding InstalledApps}"
+                    SelectedIndex="{Binding AppLayerMappingInEdition.SelectedApp}"
+                    VerticalAlignment="Center" HorizontalAlignment="Right"
+                    MinWidth="100">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <Image Source="{Binding Icon}" MaxWidth="20" MaxHeight="20" Margin="0 0 10 0"
+                                       VerticalAlignment="Center" />
+                                <TextBlock Text="{Binding Name}" Margin="0 0 20 0" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+            </StackPanel>
+
+            <StackPanel
+                Grid.Row="1" Grid.Column="0"
+                Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
+                <TextBlock FontSize="10" Foreground="Gray">
+                    Or
+                    <TextBlock cal:Message.Attach="[Event PreviewMouseDown] = [Action ChooseCustomExe()]">
+                        <Hyperlink>choose...</Hyperlink>
+                    </TextBlock>
+                </TextBlock>
+            </StackPanel>
 
             <materialDesign:PackIcon
                 Grid.Row="0" Grid.Column="1"
@@ -135,7 +148,7 @@
 
             <TextBlock
                 FontStyle="Italic" Foreground="Gray"
-                Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" TextAlignment="Center"
+                Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" TextAlignment="Center"
                 Text="{Binding HelpInEditing}" />
 
         </Grid>

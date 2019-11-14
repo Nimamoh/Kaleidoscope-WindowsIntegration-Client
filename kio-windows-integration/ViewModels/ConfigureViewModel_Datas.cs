@@ -1,9 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Media;
 using Caliburn.Micro;
 using kio_windows_integration.Models;
-using static kio_windows_integration.Helpers.ErrorMangementHelper;
 using static kio_windows_integration.ViewModels.ConfigureViewModel;
 
 namespace kio_windows_integration.ViewModels
@@ -39,23 +38,35 @@ namespace kio_windows_integration.ViewModels
         /// using <see cref="ApplicationMetaInf"/>s to complete informations
         /// </summary>
         public static AppLayerMappingItem ToUIModel(this ApplicationLayerMapping mapping,
-            ICollection<ApplicationMetaInf> apps)
+            ApplicationMetaInf appMetaInf)
         {
             if (mapping == null)
                 return null;
-            var app = Silently(
-                delegate { return apps.First(inf => inf.ImageName == mapping.ProcessName); },
-                null);
 
-            return new AppLayerMappingItem(app?.Icon, app?.Name, mapping.ProcessName, mapping.Layer);
+            return new AppLayerMappingItem(appMetaInf?.Icon, 
+                appMetaInf?.Name ?? mapping.ProcessName, 
+                mapping.ProcessName, 
+                mapping.Layer);
         }
 
         /// <summary>
         /// Convert a <see cref="AppLayerMappingItem"/> to a <see cref="ApplicationLayerMapping"/>
+        /// using <see cref="ApplicationMetaInf"/> to complete additionnal informations
         /// </summary>
-        public static ApplicationLayerMapping ToModel(this AppLayerMappingItem item)
+        public static ApplicationLayerMapping ToModel(this AppLayerMappingItem item, ApplicationMetaInf metaInf)
         {
-            return new ApplicationLayerMapping(item.ImageName, item.LayerNumber);
+            return new ApplicationLayerMapping(item.ImageName, item.LayerNumber, metaInf?.Path);
+        }
+
+        /// <summary>
+        /// Add (or replace first occurence of meta inf) based on ImageName uniqueness
+        /// </summary>
+        public static void AddOrReplaceOnUniqueImageName(this ObservableCollection<ApplicationMetaInf> collection, ApplicationMetaInf item)
+        {
+            var existing = collection.FirstOrDefault(meta => meta.ImageName == item.ImageName);
+            if (existing != null)
+                collection.Remove(existing);
+            collection.Add(item);
         }
 
         #endregion

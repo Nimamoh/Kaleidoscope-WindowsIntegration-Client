@@ -1,5 +1,6 @@
-﻿using System;
+﻿using kio_windows_integration.Models;
 using log4net;
+using Microsoft.Win32;
 using static kio_windows_integration.Helpers.ErrorMangementHelper;
 
 namespace kio_windows_integration.ViewModels
@@ -39,6 +40,7 @@ namespace kio_windows_integration.ViewModels
 
             string GetAppHelpMsg(string appName) => (appName != null) ? $"When {appName} is focused" : "";
             string GetLayerHelpMessage(int layerN) => (layerN > unset) ? $"layer {layerN} is activated" : "";
+
             string GetLinkingWord(string first, string second) =>
                 (!string.IsNullOrWhiteSpace(first) && !string.IsNullOrWhiteSpace(second))
                     ? "then"
@@ -47,7 +49,7 @@ namespace kio_windows_integration.ViewModels
             var appHelpMsg = GetAppHelpMsg(uiMapping?.AppName);
             var layerHelpMessage = GetLayerHelpMessage(AppLayerMappingInEdition?.LayerNumber ?? unset);
             var linkingWord = GetLinkingWord(appHelpMsg, layerHelpMessage);
-            
+
             return $"{appHelpMsg} {linkingWord} {layerHelpMessage}".Trim();
         }
 
@@ -64,6 +66,22 @@ namespace kio_windows_integration.ViewModels
         public void DeleteItem(AppLayerMappingItem item)
         {
             AppLayerMappings.Remove(item);
+        }
+
+        public void ChooseCustomExe()
+        {
+            var ofd = new OpenFileDialog();
+            ofd.Filter = "Programs (.exe)|*.exe";
+            var result = ofd.ShowDialog();
+            
+            if (!result ?? false)
+                return;
+
+            var path = ofd.FileName;
+            var metaInf = new ApplicationMetaInf(path);
+
+            InstalledApps.AddOrReplaceOnUniqueImageName(metaInf);
+            AppLayerMappingInEdition.SelectedApp = InstalledApps.IndexOf(metaInf);
         }
 
         private AppLayerMappingItem EditionToMapping(EditableAppLayerMapping inEdition)
