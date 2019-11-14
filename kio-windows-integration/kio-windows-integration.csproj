@@ -158,8 +158,11 @@
     <Compile Include="Events\SerialPortOnline.cs" />
     <Compile Include="Events\SuccessOnKeyboardConnect.cs" />
     <Compile Include="Exceptions\WindowsIntegrationFocusApiException.cs" />
+    <Compile Include="Helpers\AsyncHelper.cs" />
     <Compile Include="Helpers\ErrorMangementHelper.cs" />
-    <Compile Include="Helpers\ImageHelpers.cs" />
+    <Compile Include="Helpers\IErrorHandler.cs" />
+    <Compile Include="Helpers\ImageHelper.cs" />
+    <Compile Include="Helpers\LogErrorHandler.cs" />
     <Compile Include="Models\ApplicationLayerMapping.cs" />
     <Compile Include="Models\ApplicationMetaInf.cs" />
     <Compile Include="Services\FocusClient.cs" />

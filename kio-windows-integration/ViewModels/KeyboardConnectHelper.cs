@@ -31,8 +31,7 @@ namespace kio_windows_integration.Models
         /// Then check if API support is OKAY on keyboard side
         /// Also sends event that the keyboard has successfully been connected to through Event aggregator
         /// </summary>
-        /// <returns></returns>
-        public static async Task<SerialPort> ConfigureAndCheck(SerialPort port, String portName, IEventAggregator aggregator)
+        public static async Task ConfigureCheckAndNotify(SerialPort port, String portName, IEventAggregator aggregator)
         {
             if (port.IsOpen)
                port.Close();
@@ -48,7 +47,6 @@ namespace kio_windows_integration.Models
             {
                 port.Open();
                 var version =await WindowsIntegrationFocusApi.VersionAsync(port);
-                aggregator.PublishOnUIThread(new SuccessOnKeyboardConnect(portName));
                 Log.Info("Successfully connected to " + portName+". Api version " + version);
             }
             catch (Exception e)
@@ -57,8 +55,8 @@ namespace kio_windows_integration.Models
                 aggregator.PublishOnUIThread(new FailureOnKeyboardConnect(e.Message, e));
                 throw new KeyboardConnectException(e.Message, e);
             }
-
-            return port;
+            
+            aggregator.PublishOnUIThread(new SuccessOnKeyboardConnect(portName));
         }
     }
 }

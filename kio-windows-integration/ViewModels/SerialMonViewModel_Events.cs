@@ -1,20 +1,21 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Caliburn.Micro;
 using kio_windows_integration.Events;
+using kio_windows_integration.Helpers;
 using ILog = log4net.ILog;
 using LogManager = log4net.LogManager;
 
 namespace kio_windows_integration.ViewModels
 {
-    public partial class SerialMonViewModel: IHandle<SuccessOnKeyboardConnect>
+    public partial class SerialMonViewModel : IHandle<SuccessOnKeyboardConnect>
         , IHandle<SerialPortOffline>
     {
-
         private static readonly ILog Log = LogManager.GetLogger(typeof(SerialMonViewModel));
 
-        
+
         #region Message processing
-        
+
         public void Handle(SuccessOnKeyboardConnect message)
         {
             CanSendToKeyboard = true;
@@ -29,21 +30,20 @@ namespace kio_windows_integration.ViewModels
 
         #region UI events
 
-        public async void SendToKeyboard(string msg)
+        public void SendToKeyboard(string msg)
+        {
+            SendToKeyboardAsync(msg)
+                .SafeFireAndForget(e => Log.Error("Failed to send command to keyboard: " + msg, e));
+        }
+
+        private async Task SendToKeyboardAsync(string msg)
         {
             if (msg == null)
                 return;
-            try
-            {
-                Console += Environment.NewLine + "< " + msg + Environment.NewLine;
-                UserInput = "";
-                string response = await FocusClient.RequestAsync(keyboardSerialPort, msg);
-                Console += "> " + response.Replace("\n", "\n> ");
-            }
-            catch (Exception e)
-            {
-                Log.Error("Failed to send command to keyboard: " + msg, e);
-            }
+            Console += Environment.NewLine + "< " + msg + Environment.NewLine;
+            UserInput = "";
+            string response = await FocusClient.RequestAsync(keyboardSerialPort, msg);
+            Console += "> " + response.Replace("\n", "\n> ");
         }
 
         #endregion

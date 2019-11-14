@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Threading.Tasks;
 using Caliburn.Micro;
 using kio_windows_integration.Events;
+using kio_windows_integration.Helpers;
 using kio_windows_integration.Models;
 using kio_windows_integration.Services;
 using ILog = log4net.ILog;
@@ -15,9 +17,11 @@ namespace kio_windows_integration.ViewModels
         private static readonly ILog Log = LogManager.GetLogger(typeof(DebugViewModel));
 
         private WinApi winApi;
+        private LogErrorHandler logErrorHandler;
 
-        public DebugViewModel(WinApi winApi)
+        public DebugViewModel(WinApi winApi, LogErrorHandler logErrorHandler)
         {
+            this.logErrorHandler = logErrorHandler;
             this.winApi = winApi;
             this.winApi.ProcessOnForeground += delegate(object sender, ProcessEventArgs args)
             {
@@ -47,10 +51,14 @@ namespace kio_windows_integration.ViewModels
         {
         }
 
-        protected override async void OnViewReady(object view)
+        protected override void OnViewReady(object view)
         {
             base.OnViewReady(view);
+            OnViewReadyAsync().SafeFireAndForget(logErrorHandler);
+        }
 
+        private async Task OnViewReadyAsync()
+        {
             var applicationMetaInfs = await WinApi.QueryInstalledProgramsAsync();
             InstalledPrograms = new ObservableCollection<ApplicationMetaInf>(applicationMetaInfs);
         }

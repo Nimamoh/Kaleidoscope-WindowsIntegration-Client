@@ -5,7 +5,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Caliburn.Micro;
 using kio_windows_integration.Events;
-using kio_windows_integration.Models;
+using kio_windows_integration.Helpers;
+using static kio_windows_integration.Models.KeyboardConnectHelper;
+using static kio_windows_integration.ViewModels.HomeViewModel.ConnectState;
 using ILog = log4net.ILog;
 using LogManager = log4net.LogManager;
 
@@ -29,33 +31,29 @@ namespace kio_windows_integration.ViewModels
 
         #region Actions
 
-        public async void Connect()
+        public void Connect()
         {
             var port = Ports[SelectedPort];
-            try
-            {
-                KeyboardConnectState = ConnectState.Pending;
-                var sp = await KeyboardConnectHelper.ConfigureAndCheck(keyboardSerialPort, port.Name, eventAggregator);
-            }
-            catch (KeyboardConnectHelper.KeyboardConnectException e)
-            {
-                Log.Error("Failed to connect to serial port", e);
-                KeyboardConnectState = ConnectState.Disconnected;
-            }
+            KeyboardConnectState = Pending;
+
+            ConfigureCheckAndNotify(keyboardSerialPort, port.Name, eventAggregator)
+                .SafeFireAndForget(exception =>
+                {
+                    Log.Error(exception is KeyboardConnectException
+                            ? "Failed to connect to serial port"
+                            : "An unexpected exception occured", exception);
+                });
         }
 
-        public async void Disconnect()
+        public void Disconnect()
         {
-            try
-            {
-                KeyboardConnectState = ConnectState.Pending;
-                await Task.Run(keyboardSerialPort.Close);
-            }
-            catch (Exception e)
-            {
-                Log.Warn("Failed to disconnect keyboard", e);
-                KeyboardConnectState = ConnectState.Disconnected;
-            }
+            KeyboardConnectState = Pending;
+            Task.Run(keyboardSerialPort.Close)
+                .SafeFireAndForget(exception =>
+                {
+                    Log.Warn("Failed to disconnect keyboard", exception);
+                    KeyboardConnectState = Disconnected;
+                });
         }
 
         #endregion
@@ -64,17 +62,17 @@ namespace kio_windows_integration.ViewModels
 
         public void Handle(SuccessOnKeyboardConnect message)
         {
-            KeyboardConnectState = ConnectState.Connected;
+            KeyboardConnectState = Connected;
         }
 
         public void Handle(FailureOnKeyboardConnect message)
         {
-            KeyboardConnectState = ConnectState.Disconnected;
+            KeyboardConnectState = Disconnected;
         }
 
         public void Handle(SerialPortOffline message)
         {
-            KeyboardConnectState = ConnectState.Disconnected;
+            KeyboardConnectState = Disconnected;
         }
 
         #endregion
@@ -88,9 +86,9 @@ namespace kio_windows_integration.ViewModels
             Ports = new ObservableCollection<PortItem>(
                 SerialPort.GetPortNames().Select(name => new PortItem(name)));
             SelectedPort = 0;
-            
+
             var connected = keyboardSerialPort?.IsOpen ?? false;
-            KeyboardConnectState = connected ? ConnectState.Connected : ConnectState.Disconnected;
+            KeyboardConnectState = connected ? Connected : Disconnected;
         }
 
         protected override void OnActivate()

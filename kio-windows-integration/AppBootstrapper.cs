@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using Caliburn.Micro;
 using kio_windows_integration.Events;
+using kio_windows_integration.Helpers;
 using kio_windows_integration.Models;
 using kio_windows_integration.Services;
 using kio_windows_integration.ViewModels;
@@ -35,11 +36,17 @@ namespace kio_windows_integration
 
         #region Message handling
 
-        public async void Handle(ProcessOnFocus message)
+        public void Handle(ProcessOnFocus message)
+        {
+            var logErrorHandler = _container.GetInstance<LogErrorHandler>();
+            var pid = message.Pid;
+            HandleProcessOnFocusAsync(pid).SafeFireAndForget(logErrorHandler);
+        }
+        
+        private async Task HandleProcessOnFocusAsync(int pid)
         {
             var layerSwitcher = _container.GetInstance<LayerSwitcher>();
             var mappings = _container.GetInstance<ISet<ApplicationLayerMapping>>();
-            var pid = message.Pid;
             var processName = Process.GetProcessById(pid).ProcessName;
 
             var relatedMappings =
@@ -52,10 +59,12 @@ namespace kio_windows_integration
 
         #endregion
 
-        protected override async void OnStartup(object sender, StartupEventArgs e)
+        protected override void OnStartup(object sender, StartupEventArgs e)
         {
+            var logErrorHandler = _container.GetInstance<LogErrorHandler>();
             var eventAggregator = _container.GetInstance<IEventAggregator>();
             var winApi = _container.GetInstance<WinApi>();
+            
             eventAggregator.Subscribe(this);
 
             DisplayRootViewFor<ShellViewModel>();
@@ -63,20 +72,21 @@ namespace kio_windows_integration
             #region App wide configuration
 
             winApi.ProcessOnForeground += OnProcessOnForeground;
-            await StartSerialPortPollingAsync();
+            PollSerialPortAsync().SafeFireAndForget(logErrorHandler);
 
             #endregion
         }
 
-        protected override async void OnExit(object sender, EventArgs e)
+        protected override void OnExit(object sender, EventArgs e)
         {
+            var logErrorHandler = _container.GetInstance<LogErrorHandler>();
             var eventAggregator = _container.GetInstance<IEventAggregator>();
             var winApi = _container.GetInstance<WinApi>();
             var layerSwitcher = _container.GetInstance<LayerSwitcher>();
             eventAggregator.Unsubscribe(this);
 
             winApi.ProcessOnForeground -= OnProcessOnForeground;
-            await layerSwitcher.UnsetLastLayersAsync();
+            layerSwitcher.UnsetLastLayersAsync().SafeFireAndForget(logErrorHandler);
 
             base.OnExit(sender, e);
             this.stopPoller = true;
@@ -93,12 +103,12 @@ namespace kio_windows_integration
 
         private bool stopPoller = false;
 
-        protected async Task StartSerialPortPollingAsync()
+        private async Task PollSerialPortAsync()
         {
-            await Task.Run(StartSerialPortPolling);
+            await Task.Run(PollSerialPort);
         }
 
-        protected void StartSerialPortPolling()
+        private void PollSerialPort()
         {
             var eventAggregator = _container.GetInstance<IEventAggregator>();
             var sp = _container.GetInstance<SerialPort>();

@@ -19,7 +19,7 @@ namespace kio_windows_integration.ViewModels
     {
         private readonly PersistenceService persistenceService;
         private readonly SerialPort keyboardSerialPort;
-        private readonly ErrorMangementHelper errorHelper;
+        private readonly LogErrorHandler logErrorHandler;
         private readonly ISet<ApplicationLayerMapping> appWideAppLayerMappings;
         private readonly IEventAggregator eventAggregator;
 
@@ -64,17 +64,26 @@ namespace kio_windows_integration.ViewModels
         public ObservableCollection<AppLayerMappingItem> AppLayerMappings { get; } =
             new ObservableCollection<AppLayerMappingItem>();
 
-        public ConfigureViewModel(SerialPort keyboardSerialPort, IEventAggregator eventAggregator, ErrorMangementHelper errorHelper,
-            PersistenceService persistenceService, ISet<ApplicationLayerMapping> appWideAppLayerMappings)
+        public ConfigureViewModel(
+            SerialPort keyboardSerialPort, 
+            IEventAggregator eventAggregator, 
+            LogErrorHandler logErrorHandler,
+        PersistenceService persistenceService, 
+            ISet<ApplicationLayerMapping> appWideAppLayerMappings)
         {
-            this.errorHelper = errorHelper;
+            this.logErrorHandler = logErrorHandler;
             this.keyboardSerialPort = keyboardSerialPort;
             this.appWideAppLayerMappings = appWideAppLayerMappings;
             this.persistenceService = persistenceService;
             this.eventAggregator = eventAggregator;
         }
 
-        protected override async void OnInitialize()
+        protected override void OnInitialize()
+        {
+            OnInitializeAsync().SafeFireAndForget(logErrorHandler);
+        }
+
+        private async Task OnInitializeAsync()
         {
             base.OnInitialize();
 
@@ -86,7 +95,7 @@ namespace kio_windows_integration.ViewModels
             {
                 maxLayer = await WindowsIntegrationFocusApi.TotalLayerCountAsync(keyboardSerialPort);
             }
-            catch (Exception e) when (e is WindowsIntegrationFocusApiException || e is KeyboardConnectException)
+            catch (WindowsIntegrationFocusApiException e)
             {
                 Log.Error("Failed while communicating with keyboard", e);
                 eventAggregator.PublishOnUIThread(new SerialPortOffline());

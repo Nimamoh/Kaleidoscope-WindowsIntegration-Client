@@ -33,7 +33,7 @@ namespace kio_windows_integration.Helpers
         }
     }
 
-    public class ImageHelpers
+    public class ImageHelper
     {
     }
 }

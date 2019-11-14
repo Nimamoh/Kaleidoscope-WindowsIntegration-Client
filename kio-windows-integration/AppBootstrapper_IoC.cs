@@ -25,6 +25,7 @@ namespace kio_windows_integration
                 .Singleton<IEventAggregator, EventAggregator>();
 
             // App wide
+            _container.RegisterPerRequest(typeof(LogErrorHandler), nameof(LogErrorHandler), typeof(LogErrorHandler));
             _container.RegisterHandler(typeof(SerialPort), "keyboardSerialPort",
                 container => keyboardSerialPort);
             _container.RegisterHandler(typeof(ISet<ApplicationLayerMapping>), "appLayerMappings",
@@ -35,6 +36,7 @@ namespace kio_windows_integration
                 typeof(ErrorMangementHelper));
             _container.RegisterPerRequest(typeof(PersistenceService), nameof(PersistenceService),
                 typeof(PersistenceService));
+            
 
             // UI
             _container.RegisterPerRequest(typeof(ShellViewModel), nameof(ShellViewModel), typeof(ShellViewModel));
