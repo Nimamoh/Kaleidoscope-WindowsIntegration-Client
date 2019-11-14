@@ -4,7 +4,7 @@ Windows application for integration with [Keyboard.io](https://keyboard.io) mode
 
 *At the moment, the only feature is the on-the-fly layer switching depending on the focused window*
 
-It uses [Kaleidoscope-WindowsIntegration](https://github.com/Nimamoh/Kaleidoscope-WindowsIntegration) to communicate with the keyboard.
+It uses [Kaleidoscope-WindowsIntegration](https://github.com/Nimamoh/Kaleidoscope-WindowsIntegration) to communicate with the keyboard. Don't forget to install it on your keyboard.
 
 ## How to install
 
