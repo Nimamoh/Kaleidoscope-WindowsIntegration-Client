@@ -10,6 +10,13 @@ It uses [Kaleidoscope-WindowsIntegration](https://github.com/Nimamoh/Kaleidoscop
 
 Go to [releases](https://github.com/Nimamoh/Kaleidoscope-WindowsIntegration-Client/releases). Grab the last zip and run setup.exe.
 
+## How to start application with the system
+
+- Type <kbd>WIN</kbd>+<kbd>R</kbd> then type `shell:startup`
+- On the opened folder, right click and choose `New > Create shortcut` then choose the application executable.
+
+Now, the application should start on login
+
 ## How to use
 
 The usage is very straightforward. Connect to your keyboard choosing the correct serial port. Then you have this screen:
