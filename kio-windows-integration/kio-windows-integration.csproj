@@ -155,6 +155,7 @@
     <Compile Include="AppBootstrapper_IoC.cs" />
     <Compile Include="Events\FailureOnKeyboardConnect.cs" />
     <Compile Include="Events\IAppEvent.cs" />
+    <Compile Include="Events\PendingOnKeyboardConnect.cs" />
     <Compile Include="Events\ProcessEventArgs.cs" />
     <Compile Include="Events\ProcessOnFocus.cs" />
     <Compile Include="Events\SerialPortOffline.cs" />

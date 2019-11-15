@@ -1,4 +1,5 @@
 ﻿using System;
+using kio_windows_integration.Annotations;
 
 namespace kio_windows_integration.Events
 {
@@ -7,13 +8,14 @@ namespace kio_windows_integration.Events
     /// </summary>
     public class FailureOnKeyboardConnect
     {
-        public FailureOnKeyboardConnect(string msg, Exception inner)
+        public FailureOnKeyboardConnect(string msg, Exception inner = null)
         {
 
             Message = msg;
             Inner = inner;
         }
 
+        [CanBeNull]
         public Exception Inner { get; }
 
         public string Message { get; }

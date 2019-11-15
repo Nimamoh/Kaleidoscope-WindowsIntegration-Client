@@ -1,9 +1,12 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
 using System.Globalization;
 using System.IO.Ports;
 using System.Windows;
 using kio_windows_integration.ValueConverters;
+using static System.Windows.Visibility;
 using static kio_windows_integration.ViewModels.HomeViewModel;
+using static kio_windows_integration.ViewModels.HomeViewModel.ConnectState;
 
 namespace kio_windows_integration.ViewModels
 {
@@ -23,46 +26,37 @@ namespace kio_windows_integration.ViewModels
 
     #region Converters
 
-    public class ConnectingIsVisibleConverter :
-        BaseValueConverter<ConnectState, Visibility>
+    abstract class WithNoConvertBack<T, TR> : BaseValueConverter<T, TR>
+    {
+        public override T ConvertBack(TR value, object parameter, CultureInfo culture)
+        {
+            throw new InvalidOperationException("Should never be used");
+        }
+    }
+    class ConnectedIsCollapsedConverter :
+        WithNoConvertBack<ConnectState, Visibility>
     {
         public override Visibility Convert(ConnectState value, object parameter, CultureInfo culture)
         {
-            switch (value)
-            {
-                case ConnectState.Disconnected:
-                case ConnectState.Pending:
-                    return Visibility.Visible;
-                default:
-                    return Visibility.Collapsed;
-            }
-        }
-
-        public override ConnectState ConvertBack(Visibility value, object parameter, CultureInfo culture)
-        {
-            return ConnectState.Disconnected;
+            return value == Connected ? Collapsed : Visible;
         }
     }
 
-    public class ConnectingIsCollapsedConverter :
-        ConnectingIsVisibleConverter
+    class ConnectedIsVisibleConverter :
+        WithNoConvertBack<ConnectState, Visibility>
     {
-        private Visibility invert(Visibility visibility)
-        {
-            switch (visibility)
-            {
-                case Visibility.Hidden:
-                case Visibility.Collapsed:
-                    return Visibility.Visible;
-                default:
-                    return Visibility.Collapsed;
-            }
-        }
-
         public override Visibility Convert(ConnectState value, object parameter, CultureInfo culture)
         {
-            var initial = base.Convert(value, parameter, culture);
-            return invert(initial);
+            return value == Connected ? Visible : Collapsed;
+        }
+    }
+
+    class PendingIsVisibleConverter :
+        WithNoConvertBack<ConnectState, Visibility>
+    {
+        public override Visibility Convert(ConnectState value, object parameter, CultureInfo culture)
+        {
+            return value == Pending ? Visible : Collapsed;
         }
     }
 
@@ -80,7 +74,7 @@ namespace kio_windows_integration.ViewModels
 
         private readonly SerialPort keyboardSerialPort;
 
-        private ConnectState keyboardConnectState = ConnectState.Disconnected;
+        private ConnectState keyboardConnectState = Disconnected;
 
         public ConnectState KeyboardConnectState
         {
@@ -89,7 +83,7 @@ namespace kio_windows_integration.ViewModels
             {
                 keyboardConnectState = value;
                 NotifyOfPropertyChange(nameof(KeyboardConnectState));
-                CanConnect = (value == ConnectState.Disconnected);
+                CanConnect = (value == Disconnected);
             }
         }
 

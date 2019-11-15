@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.IO.Ports;
 using System.Linq;
 using System.Threading.Tasks;
@@ -15,6 +14,7 @@ using LogManager = log4net.LogManager;
 namespace kio_windows_integration.ViewModels
 {
     public partial class HomeViewModel : Screen
+        , IHandle<PendingOnKeyboardConnect>
         , IHandle<SuccessOnKeyboardConnect>
         , IHandle<FailureOnKeyboardConnect>
         , IHandle<SerialPortOffline>
@@ -34,8 +34,6 @@ namespace kio_windows_integration.ViewModels
 
         public void Connect()
         {
-            KeyboardConnectState = Pending;
-            
             ConnectAsync().SafeFireAndForget(e =>
             {
                 Log.Error("An unexpected error occured during connection to keyboard", e);
@@ -46,8 +44,8 @@ namespace kio_windows_integration.ViewModels
         private async Task ConnectAsync()
         {
             var port = Ports[SelectedPort];
-            keyboardConnectState = Pending;
 
+            eventAggregator.PublishOnUIThread(new PendingOnKeyboardConnect(port.Name));
             try
             {
                 await TryConnectKeyboard(keyboardSerialPort, port.Name);
@@ -73,6 +71,11 @@ namespace kio_windows_integration.ViewModels
         #endregion
 
         #region Message processing
+
+        public void Handle(PendingOnKeyboardConnect message)
+        {
+            KeyboardConnectState = Pending;
+        }
 
         public void Handle(SuccessOnKeyboardConnect message)
         {

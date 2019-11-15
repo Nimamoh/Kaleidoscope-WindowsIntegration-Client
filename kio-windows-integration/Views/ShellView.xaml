@@ -161,7 +161,7 @@
                     <Setter Property="FontWeight" Value="Normal" />
                 </Style>
                 <Style TargetType="materialDesign:PackIcon">
-                    <Setter Property="Foreground" Value="{DynamicResource PrimaryHueDarkForegroundBrush}"></Setter>
+                    <Setter Property="Foreground" Value="{DynamicResource PrimaryHueDarkForegroundBrush}" />
                 </Style>
             </Grid.Resources>
             

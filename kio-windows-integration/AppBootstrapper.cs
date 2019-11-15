@@ -13,6 +13,8 @@ using kio_windows_integration.Models;
 using kio_windows_integration.Services;
 using kio_windows_integration.ViewModels;
 using log4net.Config;
+using static kio_windows_integration.Helpers.ErrorMangementHelper;
+using static kio_windows_integration.Models.KeyboardConnectHelper;
 using ILog = log4net.ILog;
 using LogManager = log4net.LogManager;
 
@@ -42,7 +44,7 @@ namespace kio_windows_integration
             var pid = message.Pid;
             HandleProcessOnFocusAsync(pid).SafeFireAndForget(logErrorHandler);
         }
-        
+
         private async Task HandleProcessOnFocusAsync(int pid)
         {
             var layerSwitcher = _container.GetInstance<LayerSwitcher>();
@@ -64,7 +66,7 @@ namespace kio_windows_integration
             var logErrorHandler = _container.GetInstance<LogErrorHandler>();
             var eventAggregator = _container.GetInstance<IEventAggregator>();
             var winApi = _container.GetInstance<WinApi>();
-            
+
             eventAggregator.Subscribe(this);
 
             DisplayRootViewFor<ShellViewModel>();
@@ -72,6 +74,7 @@ namespace kio_windows_integration
             #region App wide configuration
 
             winApi.ProcessOnForeground += OnProcessOnForeground;
+            TryAutoConnect().SafeFireAndForget(logErrorHandler);
             PollSerialPortAsync().SafeFireAndForget(logErrorHandler);
 
             #endregion
@@ -99,9 +102,31 @@ namespace kio_windows_integration
             eventAggregator.PublishOnUIThread(new ProcessOnFocus(pid));
         }
 
-        #region Serial port poller
+        #region Serial port routines
 
         private bool stopPoller = false;
+
+        private async Task TryAutoConnect()
+        {
+            var eventAggregator = _container.GetInstance<IEventAggregator>();
+            var sp = keyboardSerialPort;
+            var ports = SerialPort.GetPortNames();
+
+            eventAggregator.PublishOnUIThread(new PendingOnKeyboardConnect(null));
+            foreach (var port in ports)
+            {
+                await Silently(
+                    () => TryConnectKeyboard(sp, port),
+                    Task.CompletedTask);
+
+                if (!keyboardSerialPort.IsOpen) continue;
+                eventAggregator.PublishOnUIThread(new SuccessOnKeyboardConnect(port));
+                break;
+            }
+
+            if (!keyboardSerialPort.IsOpen)
+                eventAggregator.PublishOnUIThread(new FailureOnKeyboardConnect("Cannot autoconnect"));
+        }
 
         private async Task PollSerialPortAsync()
         {
