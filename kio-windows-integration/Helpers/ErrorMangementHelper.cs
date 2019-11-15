@@ -1,5 +1,6 @@
 ﻿using System;
 using Caliburn.Micro;
+using Action = System.Action;
 using ILog = log4net.ILog;
 using LogManager = log4net.LogManager;
 
@@ -35,6 +36,18 @@ namespace kio_windows_integration.Helpers
             catch (Exception)
             {
                 return fallbackValue;
+            }
+        }
+
+        public static void Silently(Action statement)
+        {
+            try
+            {
+                statement();
+            }
+            catch (Exception)
+            {
+                // 
             }
         }
     }

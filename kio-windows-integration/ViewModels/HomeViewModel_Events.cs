@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Caliburn.Micro;
 using kio_windows_integration.Events;
 using kio_windows_integration.Helpers;
+using kio_windows_integration.Models;
 using static kio_windows_integration.Models.KeyboardConnectHelper;
 using static kio_windows_integration.ViewModels.HomeViewModel.ConnectState;
 using ILog = log4net.ILog;
@@ -33,22 +34,35 @@ namespace kio_windows_integration.ViewModels
 
         public void Connect()
         {
-            var port = Ports[SelectedPort];
             KeyboardConnectState = Pending;
+            
+            ConnectAsync().SafeFireAndForget(e =>
+            {
+                Log.Error("An unexpected error occured during connection to keyboard", e);
+                eventAggregator.PublishOnUIThread(new FailureOnKeyboardConnect(e.Message, e));
+            });
+        }
 
-            ConfigureCheckAndNotify(keyboardSerialPort, port.Name, eventAggregator)
-                .SafeFireAndForget(exception =>
-                {
-                    Log.Error(exception is KeyboardConnectException
-                            ? "Failed to connect to serial port"
-                            : "An unexpected exception occured", exception);
-                });
+        private async Task ConnectAsync()
+        {
+            var port = Ports[SelectedPort];
+            keyboardConnectState = Pending;
+
+            try
+            {
+                await TryConnectKeyboard(keyboardSerialPort, port.Name);
+                eventAggregator.PublishOnUIThread(new SuccessOnKeyboardConnect(port.Name));
+            }
+            catch (KeyboardConnectException e)
+            {
+                eventAggregator.PublishOnUIThread(new FailureOnKeyboardConnect(e.Message, e));
+            }
         }
 
         public void Disconnect()
         {
             KeyboardConnectState = Pending;
-            Task.Run(keyboardSerialPort.Close)
+            keyboardSerialPort.CloseAsync()
                 .SafeFireAndForget(exception =>
                 {
                     Log.Warn("Failed to disconnect keyboard", exception);

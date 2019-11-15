@@ -1,24 +1,29 @@
 ﻿using System;
-using System.Data;
 using System.IO.Ports;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-using Caliburn.Micro;
-using kio_windows_integration.Events;
 using kio_windows_integration.Services;
-using ILog = log4net.ILog;
-using LogManager = log4net.LogManager;
+using static kio_windows_integration.Helpers.ErrorMangementHelper;
 
 namespace kio_windows_integration.Models
 {
+    public static class KeyboardConnectHelperExtensions
+    {
+        public static Task OpenAsync(this SerialPort serialPort)
+        {
+            return Task.Run(serialPort.Open);
+        }
+
+        public static Task CloseAsync(this SerialPort serialPort)
+        {
+            return Task.Run(serialPort.Close);
+        }
+    }
+
     /// <summary>
     /// Represent the connection to the keyboard
     /// </summary>
     public static class KeyboardConnectHelper
     {
-
-        private static readonly ILog Log = LogManager.GetLogger(typeof(KeyboardConnectHelper));
-
         // @formatter:off
         public class KeyboardConnectException : Exception
         {
@@ -27,36 +32,39 @@ namespace kio_windows_integration.Models
         // @formatter:on
 
         /// <summary>
-        /// Connects the keyboard with default params. Returns the arg serial port configured.
-        /// Then check if API support is OKAY on keyboard side
-        /// Also sends event that the keyboard has successfully been connected to through Event aggregator
+        /// Try to connect to keyboard through the port name
+        /// Throws <exception cref="KeyboardConnectException" /> if failed to connect
         /// </summary>
-        public static async Task ConfigureCheckAndNotify(SerialPort port, String portName, IEventAggregator aggregator)
+        /// <param name="port"></param>
+        /// <param name="portName"></param>
+        public static async Task TryConnectKeyboard(SerialPort port, string portName)
         {
             if (port.IsOpen)
-               port.Close();
+                port.Close();
+
 
             port.PortName = portName;
-            port.BaudRate = 9600;
-            port.DtrEnable = true;
-            port.RtsEnable = true;
-            port.WriteTimeout = 500;
-            port.ReadTimeout = 500;
+            ConfigureDefault(port);
 
             try
             {
-                port.Open();
-                var version =await WindowsIntegrationFocusApi.VersionAsync(port);
-                Log.Info("Successfully connected to " + portName+". Api version " + version);
+                await port.OpenAsync().ConfigureAwait(false);
+                await WindowsIntegrationFocusApi.VersionAsync(port).ConfigureAwait(false);
             }
             catch (Exception e)
             {
-                port.Close();
-                aggregator.PublishOnUIThread(new FailureOnKeyboardConnect(e.Message, e));
+                await Silently(port.CloseAsync, Task.CompletedTask).ConfigureAwait(false);
                 throw new KeyboardConnectException(e.Message, e);
             }
-            
-            aggregator.PublishOnUIThread(new SuccessOnKeyboardConnect(portName));
+        }
+
+        private static void ConfigureDefault(SerialPort serialPort)
+        {
+            serialPort.BaudRate = 9600;
+            serialPort.DtrEnable = true;
+            serialPort.RtsEnable = true;
+            serialPort.WriteTimeout = 500;
+            serialPort.ReadTimeout = 500;
         }
     }
 }
