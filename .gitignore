@@ -17,6 +17,10 @@ bld/
 [Bb]in/
 [Oo]bj/
 
+# Result of publish script
+*.exe
+*.zip
+
 # Roslyn cache directories
 *.ide/
 

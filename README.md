@@ -8,7 +8,7 @@ It uses [Kaleidoscope-WindowsIntegration](https://github.com/Nimamoh/Kaleidoscop
 
 ## How to install
 
-Go to [releases](https://github.com/Nimamoh/Kaleidoscope-WindowsIntegration-Client/releases). Grab the last zip and run setup.exe.
+Go to [releases](https://github.com/Nimamoh/Kaleidoscope-WindowsIntegration-Client/releases). Grab the last zip and run the .exe file.
 
 ## How to start application with the system
 
