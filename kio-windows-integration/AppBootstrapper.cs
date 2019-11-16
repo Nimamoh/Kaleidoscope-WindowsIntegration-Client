@@ -115,9 +115,7 @@ namespace kio_windows_integration
             eventAggregator.PublishOnUIThread(new PendingOnKeyboardConnect(null));
             foreach (var port in ports)
             {
-                await Silently(
-                    () => TryConnectKeyboard(sp, port),
-                    Task.CompletedTask);
+                await Silently(() =>  TryConnectKeyboard(sp, port));
 
                 if (!keyboardSerialPort.IsOpen) continue;
                 eventAggregator.PublishOnUIThread(new SuccessOnKeyboardConnect(port));

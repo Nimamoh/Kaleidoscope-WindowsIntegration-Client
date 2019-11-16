@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Caliburn.Micro;
 using Action = System.Action;
 using ILog = log4net.ILog;
@@ -36,6 +37,18 @@ namespace kio_windows_integration.Helpers
             catch (Exception)
             {
                 return fallbackValue;
+            }
+        }
+
+        public static async Task Silently(Func<Task> asyncStatement)
+        {
+            try
+            {
+                await asyncStatement.Invoke();
+            }
+            catch (Exception)
+            {
+                // ignored
             }
         }
 

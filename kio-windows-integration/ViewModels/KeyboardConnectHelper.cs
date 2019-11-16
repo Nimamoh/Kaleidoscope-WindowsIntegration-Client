@@ -53,7 +53,7 @@ namespace kio_windows_integration.Models
             }
             catch (Exception e)
             {
-                await Silently(port.CloseAsync, Task.CompletedTask).ConfigureAwait(false);
+                await Silently(port.CloseAsync).ConfigureAwait(false);
                 throw new KeyboardConnectException(e.Message, e);
             }
         }
