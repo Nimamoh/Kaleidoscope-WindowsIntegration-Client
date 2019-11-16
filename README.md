@@ -28,3 +28,11 @@ Use the bottom menu to choose an application and a keyboard layer.
 As long as the application is running, it will apply the configured layers depending on your focused application.
 
 You can configure several layers for a same application. Although it will deactivate layers on window unfocus. I recommand defining keyboard layers specifically to be used with this application. 
+
+
+# For developers - me of the future
+
+- Open the .sln file with rider or visual studio.
+- .NET Core 3 with platoform extensions is used
+- The app is generated as a single fat executable. see the publish script to see the commands
+- Once publish script finished, append version to the zip files and go to the github page to make a manual release
