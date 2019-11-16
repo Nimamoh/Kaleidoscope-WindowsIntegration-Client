@@ -101,7 +101,7 @@ namespace kio_windows_integration.ViewModels
                 eventAggregator.PublishOnUIThread(new SerialPortOffline());
             }
 
-            AvailableLayers = Enumerable.Range(0, Max(0, maxLayer - 1));
+            AvailableLayers = Enumerable.Range(0, Max(0, maxLayer));
 
             await LoadMappings();
         }
