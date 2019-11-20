@@ -12,10 +12,10 @@ Go to [releases](https://github.com/Nimamoh/Kaleidoscope-WindowsIntegration-Clie
 
 ## How to start application with the system
 
-- Type <kbd>WIN</kbd>+<kbd>R</kbd> then type `shell:startup`
-- On the opened folder, right click and choose `New > Create shortcut` then choose the application executable.
+Go to settings menu and check the option `Start with user session`.
 
-Now, the application should start on login
+It creates a shortcut to the `shell:startup` folder, making the Kaleidoscope Companion starting with your user session. 
+It relies on finding the executable on the path it was on setting up the option. **If you moved the utility, just uncheck and re-check the option and you should be good to go.**
 
 ## How to use
 
