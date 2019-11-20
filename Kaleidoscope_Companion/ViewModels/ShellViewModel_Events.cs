@@ -32,12 +32,12 @@ namespace kaleidoscope_companion.ViewModels
 
         #region Actions
 
-        public void OpenMenu()
+        public void UnfoldMenu()
         {
             MenuCollapsed = false;
         }
 
-        public void CloseMenu()
+        public void FoldMenu()
         {
             MenuCollapsed = true;
         }

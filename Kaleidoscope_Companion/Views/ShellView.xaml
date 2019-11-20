@@ -5,9 +5,9 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:System="clr-namespace:System;assembly=mscorlib"
         mc:Ignorable="d"
-        
+
         Icon="../kio.ico"
-        
+
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
         TextElement.FontWeight="Medium"
@@ -45,10 +45,10 @@
     </Window.Resources>
 
     <Window.Triggers>
-        <EventTrigger RoutedEvent="ButtonBase.Click" SourceName="btnOpenMenu">
+        <EventTrigger RoutedEvent="ButtonBase.Click" SourceName="BtnUnfoldMenu">
             <BeginStoryboard Storyboard="{StaticResource MenuOpen}" />
         </EventTrigger>
-        <EventTrigger RoutedEvent="ButtonBase.Click" SourceName="btnCloseMenu">
+        <EventTrigger RoutedEvent="ButtonBase.Click" SourceName="BtnFoldMenu">
             <BeginStoryboard Storyboard="{StaticResource MenuClose}" />
         </EventTrigger>
     </Window.Triggers>
@@ -68,32 +68,25 @@
 
         <!-- Top bar -->
         <Grid Height="75" Grid.ColumnSpan="100" Background="{DynamicResource PrimaryHueDarkBrush}">
+            <TextBlock Text="{Binding Title}" TextAlignment="Center" VerticalAlignment="Center"
+                       Foreground="{DynamicResource PrimaryHueDarkForegroundBrush}"
+                       HorizontalAlignment="Center" FontSize="22" FontWeight="Bold" />
+        </Grid>
+        <Grid HorizontalAlignment="Left" Margin="10,10,0,10">
             <Grid.Resources>
-                <Style TargetType="TextBlock">
-                    <Setter Property="Foreground" Value="{DynamicResource PrimaryHueDarkForegroundBrush}" />
-                </Style>
                 <Style TargetType="materialDesign:PackIcon">
                     <Setter Property="Foreground" Value="{DynamicResource PrimaryHueDarkForegroundBrush}" />
                     <Setter Property="Width" Value="30" />
                     <Setter Property="Height" Value="30" />
                 </Style>
-                <Style TargetType="Button">
-                    <Setter Property="Foreground" Value="{DynamicResource PrimaryHueDarkForegroundBrush}" />
-                    <Setter Property="VerticalAlignment" Value="Center" />
-                    <Setter Property="HorizontalAlignment" Value="Left" />
-                    <Setter Property="Background" Value="{x:Null}" />
-                    <Setter Property="BorderBrush" Value="{x:Null}" />
-                    <Setter Property="Margin" Value="10" />
-                </Style>
             </Grid.Resources>
-
-            <TextBlock Text="{Binding Title}" TextAlignment="Center" VerticalAlignment="Center"
-                       HorizontalAlignment="Center" FontSize="22" FontWeight="Bold" />
-            <Button x:Name="btnCloseMenu" cal:Message.Attach="CloseMenu()"
+            <Button x:Name="BtnFoldMenu" cal:Message.Attach="FoldMenu()"
+                    Style="{DynamicResource MaterialDesignToolButton}"
                     Visibility="{Binding MenuCollapsed, Converter={StaticResource InvertBoolToVisibleConverter}}">
                 <materialDesign:PackIcon Kind="ArrowLeft" />
             </Button>
-            <Button x:Name="btnOpenMenu" cal:Message.Attach="OpenMenu()"
+            <Button x:Name="BtnUnfoldMenu" cal:Message.Attach="UnfoldMenu()"
+                    Style="{DynamicResource MaterialDesignToolButton}"
                     Visibility="{Binding MenuCollapsed, Converter={StaticResource BoolToVisibleConverter}}">
                 <materialDesign:PackIcon Kind="Menu" />
             </Button>
@@ -110,25 +103,37 @@
             <Border>
                 <StackPanel x:Name="GridMenu" Width="{StaticResource menuSize}" HorizontalAlignment="Left">
                     <ListView ScrollViewer.HorizontalScrollBarVisibility="Disabled">
-                        
+                        <ListView.Resources>
+                            <Style TargetType="StackPanel">
+                                <Setter Property="Orientation" Value="Horizontal" />
+                            </Style>
+                            <Style TargetType="materialDesign:PackIcon">
+                                <Setter Property="VerticalAlignment" Value="Center" />
+                                <Setter Property="Margin" Value="10,10,0,10" />
+                                <Setter Property="Height" Value="25"></Setter>
+                                <Setter Property="Width" Value="25"></Setter>
+                            </Style>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="VerticalAlignment" Value="Center" />
+                                <Setter Property="Margin" Value="20 10" />
+                            </Style>
+                        </ListView.Resources>
+
                         <ListViewItem cal:Message.Attach="[Event Selected] = [Action NavToHome()]">
-                            <StackPanel Orientation="Horizontal">
-                                <materialDesign:PackIcon Kind="ViewDashboard" Width="25" Height="25"
-                                                         VerticalAlignment="Center" Margin="10,10,0,10" />
-                                <TextBlock Text="Home" VerticalAlignment="Center" Margin="20 10" />
+                            <StackPanel>
+                                <materialDesign:PackIcon Kind="ViewDashboard"/>
+                                <TextBlock Text="Home" />
                             </StackPanel>
                         </ListViewItem>
-                        
+
                         <ListViewItem cal:Message.Attach="[Event Selected] = [Action NavToConf()]">
-                            <StackPanel Orientation="Horizontal">
-                                <materialDesign:PackIcon Kind="Keyboard" Width="25" Height="25"
-                                                         VerticalAlignment="Center" Margin="10,10,0,10" />
-                                <TextBlock Text="Configure" VerticalAlignment="Center" Margin="20 10" />
+                            <StackPanel>
+                                <materialDesign:PackIcon Kind="Keyboard" />
+                                <TextBlock Text="Configure" />
                             </StackPanel>
                         </ListViewItem>
-                        
+
                         <!-- Reactivate serial monitor and debug as needed -->
-                        
                         <!-- <ListViewItem cal:Message.Attach="[Event Selected] = [Action NavToSerialMon()]"> -->
                         <!--     <StackPanel Orientation="Horizontal"> -->
                         <!--         <materialDesign:PackIcon Kind="SerialPort" Width="25" Height="25" -->
@@ -136,7 +141,7 @@
                         <!--         <TextBlock Text="Serial monitor" VerticalAlignment="Center" Margin="20 10" /> -->
                         <!--     </StackPanel> -->
                         <!-- </ListViewItem> -->
-                        
+
                         <!-- <ListViewItem cal:Message.Attach="[Event Selected] = [Action NavToDebug()]"> -->
                         <!--     <StackPanel Orientation="Horizontal"> -->
                         <!--         <materialDesign:PackIcon Kind="Bug" Width="25" Height="25" -->
@@ -164,9 +169,11 @@
                     <Setter Property="Foreground" Value="{DynamicResource PrimaryHueDarkForegroundBrush}" />
                 </Style>
             </Grid.Resources>
-            
+
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                <materialDesign:PackIcon Visibility="{Binding ConnectedPort, Converter={StaticResource StringToVisibleConverter}}" Kind="SerialPort" VerticalAlignment="Center" />
+                <materialDesign:PackIcon
+                    Visibility="{Binding ConnectedPort, Converter={StaticResource StringToVisibleConverter}}"
+                    Kind="SerialPort" VerticalAlignment="Center" />
                 <TextBlock x:Name="ConnectedPort" VerticalAlignment="Center" HorizontalAlignment="Right"
                            Margin="0,0,10,0" />
             </StackPanel>
