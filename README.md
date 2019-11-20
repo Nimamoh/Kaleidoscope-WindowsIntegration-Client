@@ -33,6 +33,6 @@ You can configure several layers for a same application. Although it will deacti
 # For developers - me of the future
 
 - Open the .sln file with rider or visual studio.
-- .NET Core 3 with platoform extensions is used
+- .NET Core 3 with platform extensions is used
 - The app is generated as a single fat executable. see the publish script to see the commands
 - Once publish script finished, append version to the zip files and go to the github page to make a manual release
