@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO.Ports;
 using System.Linq;
@@ -11,7 +10,6 @@ using kaleidoscope_companion.Helpers;
 using kaleidoscope_companion.Models;
 using kaleidoscope_companion.Services;
 using static System.Math;
-using static kaleidoscope_companion.Models.KeyboardConnectHelper;
 
 namespace kaleidoscope_companion.ViewModels
 {

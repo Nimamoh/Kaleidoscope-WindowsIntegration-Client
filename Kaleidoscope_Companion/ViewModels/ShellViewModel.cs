@@ -12,6 +12,7 @@ namespace kaleidoscope_companion.ViewModels
             SerialPort keyboardSerialPort,
             SerialMonViewModel serialMonViewModel,
             ConfigureViewModel configureViewModel,
+            SettingsViewModel settingsViewModel,
             DebugViewModel debugViewModel,
             HomeViewModel homeViewModel,
             IEventAggregator eventAggregator)
@@ -22,6 +23,7 @@ namespace kaleidoscope_companion.ViewModels
             this.homeViewModel = homeViewModel;
             this.debugViewModel = debugViewModel;
             this.configureViewModel = configureViewModel;
+            this.settingsViewModel = settingsViewModel;
 
             this.eventAggregator = eventAggregator;
 

@@ -110,8 +110,8 @@
                             <Style TargetType="materialDesign:PackIcon">
                                 <Setter Property="VerticalAlignment" Value="Center" />
                                 <Setter Property="Margin" Value="10,10,0,10" />
-                                <Setter Property="Height" Value="25"></Setter>
-                                <Setter Property="Width" Value="25"></Setter>
+                                <Setter Property="Height" Value="25" />
+                                <Setter Property="Width" Value="25" />
                             </Style>
                             <Style TargetType="TextBlock">
                                 <Setter Property="VerticalAlignment" Value="Center" />
@@ -121,8 +121,8 @@
 
                         <ListViewItem cal:Message.Attach="[Event Selected] = [Action NavToHome()]">
                             <StackPanel>
-                                <materialDesign:PackIcon Kind="ViewDashboard"/>
-                                <TextBlock Text="Home" />
+                                <materialDesign:PackIcon Kind="SerialPort" />
+                                <TextBlock Text="Connect" />
                             </StackPanel>
                         </ListViewItem>
 
@@ -130,6 +130,13 @@
                             <StackPanel>
                                 <materialDesign:PackIcon Kind="Keyboard" />
                                 <TextBlock Text="Configure" />
+                            </StackPanel>
+                        </ListViewItem>
+
+                        <ListViewItem cal:Message.Attach="[Event Selected] = [Action NavToSettings()]">
+                            <StackPanel>
+                                <materialDesign:PackIcon Kind="Settings" />
+                                <TextBlock Text="Settings" />
                             </StackPanel>
                         </ListViewItem>
 

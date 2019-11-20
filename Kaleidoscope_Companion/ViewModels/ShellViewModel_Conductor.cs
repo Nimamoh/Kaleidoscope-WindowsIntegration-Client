@@ -5,6 +5,7 @@
         private readonly SerialMonViewModel serialMonViewModel;
         private readonly HomeViewModel homeViewModel;
         private readonly ConfigureViewModel configureViewModel;
+        private readonly SettingsViewModel settingsViewModel;
         private readonly DebugViewModel debugViewModel;
         
         public void NavToHome()
@@ -17,6 +18,12 @@
         {
             if (ActiveItem is ConfigureViewModel) return;
             ActivateItem(configureViewModel);
+        }
+
+        public void NavToSettings()
+        {
+            if (ActiveItem is SettingsViewModel) return;
+            ActivateItem(settingsViewModel);
         }
 
         public void NavToSerialMon()

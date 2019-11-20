@@ -15,10 +15,10 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Resource Include="kio.ico"/>
+        <Resource Include="kio.ico" />
 
         <!-- Used to avoid this kind of dependency resolving problems: https://docs.microsoft.com/fr-fr/nuget/reference/errors-and-warnings/nu1605#example-2-->
-        <PackageReference Include="Microsoft.NETCore.Targets" Version="3.0.0" PrivateAssets="all"/>
+        <PackageReference Include="Microsoft.NETCore.Targets" Version="3.0.0" PrivateAssets="all" />
 
         <PackageReference Include="Caliburn.Micro">
             <Version>3.2.0</Version>
