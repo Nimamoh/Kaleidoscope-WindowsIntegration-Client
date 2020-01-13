@@ -39,4 +39,10 @@
             <Version>1.1.1</Version>
         </PackageReference>
     </ItemGroup>
+
+    <ItemGroup>
+      <None Update="log4net.config">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
 </Project>

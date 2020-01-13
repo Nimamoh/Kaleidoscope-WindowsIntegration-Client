@@ -18,7 +18,7 @@ using static kaleidoscope_companion.Models.KeyboardConnectHelper;
 using ILog = log4net.ILog;
 using LogManager = log4net.LogManager;
 
-[assembly: XmlConfigurator(Watch = true)]
+[assembly: XmlConfigurator(ConfigFile = "log4net.config", Watch = true)]
 
 namespace kaleidoscope_companion
 {
