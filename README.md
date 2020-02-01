@@ -8,7 +8,15 @@ It uses [Kaleidoscope-WindowsIntegration](https://github.com/Nimamoh/Kaleidoscop
 
 ## How to install
 
-Go to [releases](https://github.com/Nimamoh/Kaleidoscope-WindowsIntegration-Client/releases). Grab the last zip and run the .exe file.
+Go to [releases](https://github.com/Nimamoh/Kaleidoscope-WindowsIntegration-Client/releases). Grab the latest zip and run the .exe file.
+
+### Which `zip` to choose
+
+ - `x86` or `x64`: In doubt, choose `x64`
+ - `self-contained` or not: In doubt, choose a `self-contained` package.
+ 
+`self-contained` package embeds `dotnetcore3` runtime, allowing you to run the application without installing any dependency.
+Otherwise, you will need to install the [.NetCore 3.1 Desktop Runtime](https://dotnet.microsoft.com/download/dotnet-core/3.1) before being able to run the application.
 
 ## How to start application with the system
 

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows.Media;
 using kaleidoscope_companion.Events;
 using kaleidoscope_companion.Models;
+using log4net;
 using Microsoft.WindowsAPICodePack.Shell;
 
 namespace kaleidoscope_companion.Services
@@ -57,6 +58,8 @@ namespace kaleidoscope_companion.Services
     /// </summary>
     public partial class WinApi
     {
+        private static readonly ILog Log = LogManager.GetLogger(typeof(WinApi));
+
         #region Constants
 
         private const uint WINEVENT_OUTOFCONTEXT = 0;
@@ -150,6 +153,9 @@ namespace kaleidoscope_companion.Services
         /// </returns>
         public static IEnumerable<ApplicationMetaInf> QueryInstalledPrograms()
         {
+
+            Log.Debug("Listing installed apps...");
+
             var FODLERID_AppsFolder =
                 new Guid(
                     "{1e87508d-89c2-42f0-8a7e-645a0f50ca58}"); // GUID taken from https://docs.microsoft.com/en-us/windows/win32/shell/knownfolderid
@@ -165,6 +171,8 @@ namespace kaleidoscope_companion.Services
                 if (path?.Contains(".exe") ?? false) // filter out non executable items
                     yield return new ApplicationMetaInf(name, icon, path);
             }
+
+            Log.Debug("Listed installed apps...");
         }
     }
 }

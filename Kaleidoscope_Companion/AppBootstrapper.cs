@@ -63,6 +63,8 @@ namespace kaleidoscope_companion
 
         protected override void OnStartup(object sender, StartupEventArgs e)
         {
+            Log.Debug("Application is starting...");
+
             var logErrorHandler = _container.GetInstance<LogErrorHandler>();
             var eventAggregator = _container.GetInstance<IEventAggregator>();
             var winApi = _container.GetInstance<WinApi>();
@@ -78,10 +80,14 @@ namespace kaleidoscope_companion
             PollSerialPortAsync().SafeFireAndForget(logErrorHandler);
 
             #endregion
+
+            Log.Debug("Application started.");
         }
 
         protected override void OnExit(object sender, EventArgs e)
         {
+            Log.Debug("Application is exiting...");
+
             var logErrorHandler = _container.GetInstance<LogErrorHandler>();
             var eventAggregator = _container.GetInstance<IEventAggregator>();
             var winApi = _container.GetInstance<WinApi>();
@@ -93,6 +99,8 @@ namespace kaleidoscope_companion
 
             base.OnExit(sender, e);
             this.stopPoller = true;
+
+            Log.Debug("Application exited...");
         }
 
         protected void OnProcessOnForeground(object sender, ProcessEventArgs args)

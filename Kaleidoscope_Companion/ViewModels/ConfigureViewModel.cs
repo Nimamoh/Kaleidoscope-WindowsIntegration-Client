@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO.Ports;
 using System.Linq;
@@ -149,7 +150,11 @@ namespace kaleidoscope_companion.ViewModels
             AppLayerMappingsToAppWide(mappings);
 
             // Persist on disk
-            await persistenceService.Save(mappings);
+            try {
+                await persistenceService.Save(mappings);
+            } catch(Exception e) {
+                Log.Error("Failed to save the mappings...", e);
+            }
         }
 
         /// <summary>
