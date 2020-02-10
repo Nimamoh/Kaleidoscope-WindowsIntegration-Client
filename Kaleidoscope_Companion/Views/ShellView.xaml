@@ -102,7 +102,7 @@
             </Border>
             <Border>
                 <StackPanel x:Name="GridMenu" Width="{StaticResource menuSize}" HorizontalAlignment="Left">
-                    <ListView ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                    <ListView ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectedIndex="{Binding SelectedMenuIndex}">
                         <ListView.Resources>
                             <Style TargetType="StackPanel">
                                 <Setter Property="Orientation" Value="Horizontal" />

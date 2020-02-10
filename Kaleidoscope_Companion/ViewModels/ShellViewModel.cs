@@ -61,6 +61,20 @@ namespace kaleidoscope_companion.ViewModels
                 NotifyOfPropertyChange(() => MenuCollapsed);
             }
         }
+        
+        //
+        // Menu selection
+        //
+        private int selectedMenuIndex;
+        public int SelectedMenuIndex
+        {
+            get => selectedMenuIndex;
+            set
+            {
+                selectedMenuIndex = value;
+                NotifyOfPropertyChange(nameof(SelectedMenuIndex));
+            }
+        }
 
         #endregion
 
