@@ -111,7 +111,7 @@ namespace kaleidoscope_companion.Services
                     return false;
                 File.Delete(StartupShortcutPath());
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 Log.Error("Failed to disable on startup");
                 success = false;
