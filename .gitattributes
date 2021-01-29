@@ -1,0 +1,6 @@
+# Default conf
+* text=auto
+
+# Bat files are windows ones
+*.bat   text eol=crlf
+gradlew text eol=lf
