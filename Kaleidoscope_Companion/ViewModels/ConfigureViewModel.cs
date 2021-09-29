@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO.Ports;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Caliburn.Micro;
 using kaleidoscope_companion.Events;
@@ -77,14 +78,15 @@ namespace kaleidoscope_companion.ViewModels
             this.eventAggregator = eventAggregator;
         }
 
-        protected override void OnInitialize()
+        protected override Task OnInitializeAsync(CancellationToken cancellationToken)
         {
-            OnInitializeAsync().SafeFireAndForget(logErrorHandler);
+            Initialize(cancellationToken).SafeFireAndForget(logErrorHandler);
+            return Task.CompletedTask;
         }
 
-        private async Task OnInitializeAsync()
+        private async Task Initialize(CancellationToken cancellationToken)
         {
-            base.OnInitialize();
+            await base.OnInitializeAsync(cancellationToken);
 
             var apps = await WinApi.QueryInstalledProgramsAsync();
             InstalledApps = new ObservableCollection<ApplicationMetaInf>(apps);
@@ -97,7 +99,7 @@ namespace kaleidoscope_companion.ViewModels
             catch (WindowsIntegrationFocusApiException e)
             {
                 Log.Error("Failed while communicating with keyboard", e);
-                eventAggregator.PublishOnUIThread(new SerialPortOffline());
+                await eventAggregator.PublishOnUIThreadAsync(new SerialPortOffline(), cancellationToken);
             }
 
             AvailableLayers = Enumerable.Range(0, Max(0, maxLayer));

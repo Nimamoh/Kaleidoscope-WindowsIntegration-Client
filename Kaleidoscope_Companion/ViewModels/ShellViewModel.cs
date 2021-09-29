@@ -27,7 +27,7 @@ namespace kaleidoscope_companion.ViewModels
 
             this.eventAggregator = eventAggregator;
 
-            eventAggregator.Subscribe(this);
+            eventAggregator.SubscribeOnPublishedThread(this);
         }
 
         public string Title { get; } = Assembly.GetExecutingAssembly().GetAssemblyName();

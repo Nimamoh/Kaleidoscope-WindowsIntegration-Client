@@ -15,8 +15,8 @@ Go to [releases](https://github.com/Nimamoh/Kaleidoscope-WindowsIntegration-Clie
  - `x86` or `x64`: In doubt, choose `x64`
  - `self-contained` or not: In doubt, choose a `self-contained` package.
  
-`self-contained` package embeds `dotnetcore3` runtime, allowing you to run the application without installing any dependency.
-Otherwise, you will need to install the [.NetCore 3.1 Desktop Runtime](https://dotnet.microsoft.com/download/dotnet-core/3.1) before being able to run the application.
+`self-contained` package embeds the whole runtime, allowing you to run the application without installing any dependency.
+Otherwise, you will need to install the [.NET5 Runtime](https://dotnet.microsoft.com/download/dotnet/5.0) before being able to run the application.
 
 ## How to start application with the system
 
@@ -43,4 +43,4 @@ You can configure several layers for a same application. Although it will deacti
 - Open the .sln file with rider or visual studio.
 - .NET Core 3 with platform extensions is used
 - The app is generated as a single fat executable. see the publish script to see the commands
-- Once publish script finished, append version to the zip files and go to the github page to make a manual release
+- Once publish script finished, go to the github page to make a manual release

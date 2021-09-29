@@ -1,6 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using System.IO.Ports;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Caliburn.Micro;
 using kaleidoscope_companion.Events;
@@ -26,18 +27,18 @@ namespace kaleidoscope_companion.ViewModels
         public HomeViewModel(SerialPort keyboardSerialPort, IEventAggregator eventAggregator)
         {
             this.eventAggregator = eventAggregator;
-            this.eventAggregator.Subscribe(this);
+            this.eventAggregator.SubscribeOnPublishedThread(this);
             this.keyboardSerialPort = keyboardSerialPort;
         }
 
         #region Actions
-
+        
         public void Connect()
         {
             ConnectAsync().SafeFireAndForget(e =>
             {
                 Log.Error("An unexpected error occured during connection to keyboard", e);
-                eventAggregator.PublishOnUIThread(new FailureOnKeyboardConnect(e.Message, e));
+                Task.Run(() => eventAggregator.PublishOnUIThreadAsync(new FailureOnKeyboardConnect(e.Message, e)));
             });
         }
 
@@ -45,15 +46,15 @@ namespace kaleidoscope_companion.ViewModels
         {
             var port = Ports[SelectedPort];
 
-            eventAggregator.PublishOnUIThread(new PendingOnKeyboardConnect(port.Name));
+            await eventAggregator.PublishOnUIThreadAsync(new PendingOnKeyboardConnect(port.Name));
             try
             {
                 await TryConnectKeyboard(keyboardSerialPort, port.Name);
-                eventAggregator.PublishOnUIThread(new SuccessOnKeyboardConnect(port.Name));
+                await eventAggregator.PublishOnUIThreadAsync(new SuccessOnKeyboardConnect(port.Name));
             }
-            catch (KeyboardConnectHelper.KeyboardConnectException e)
+            catch (KeyboardConnectException e)
             {
-                eventAggregator.PublishOnUIThread(new FailureOnKeyboardConnect(e.Message, e));
+                await eventAggregator.PublishOnUIThreadAsync(new FailureOnKeyboardConnect(e.Message, e));
             }
         }
 
@@ -72,26 +73,29 @@ namespace kaleidoscope_companion.ViewModels
 
         #region Message processing
 
-        public void Handle(PendingOnKeyboardConnect message)
+        public Task HandleAsync(PendingOnKeyboardConnect message, CancellationToken cancellationToken)
         {
             KeyboardConnectState = Pending;
+            return Task.CompletedTask;
         }
 
-        public void Handle(SuccessOnKeyboardConnect message)
+        public Task HandleAsync(SuccessOnKeyboardConnect message, CancellationToken cancellationToken)
         {
             KeyboardConnectState = Connected;
+            return Task.CompletedTask;
         }
 
-        public void Handle(FailureOnKeyboardConnect message)
+        public Task HandleAsync(FailureOnKeyboardConnect message, CancellationToken cancellationToken)
         {
             KeyboardConnectState = Disconnected;
+            return Task.CompletedTask;
         }
 
-        public void Handle(SerialPortOffline message)
+        public Task HandleAsync(SerialPortOffline message, CancellationToken cancellationToken)
         {
             KeyboardConnectState = Disconnected;
+            return Task.CompletedTask;
         }
-
         #endregion
 
         #region Lifecycles
@@ -108,16 +112,16 @@ namespace kaleidoscope_companion.ViewModels
             KeyboardConnectState = connected ? Connected : Disconnected;
         }
 
-        protected override void OnActivate()
+        protected override async Task OnActivateAsync(CancellationToken cancellationToken)
         {
-            eventAggregator.Subscribe(this);
-            base.OnActivate();
+            eventAggregator.SubscribeOnPublishedThread(this);
+            await base.OnActivateAsync(cancellationToken);
         }
 
-        protected override void OnDeactivate(bool close)
+        protected override async Task OnDeactivateAsync(bool close, CancellationToken cancellationToken)
         {
             eventAggregator.Unsubscribe(this);
-            base.OnDeactivate(close);
+            await base.OnDeactivateAsync(close, cancellationToken);
         }
 
         #endregion

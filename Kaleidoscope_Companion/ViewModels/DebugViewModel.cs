@@ -16,14 +16,12 @@ namespace kaleidoscope_companion.ViewModels
     {
         private static readonly ILog Log = LogManager.GetLogger(typeof(DebugViewModel));
 
-        private WinApi winApi;
-        private LogErrorHandler logErrorHandler;
+        private readonly LogErrorHandler logErrorHandler;
 
         public DebugViewModel(WinApi winApi, LogErrorHandler logErrorHandler)
         {
             this.logErrorHandler = logErrorHandler;
-            this.winApi = winApi;
-            this.winApi.ProcessOnForeground += delegate(object sender, ProcessEventArgs args)
+            winApi.ProcessOnForeground += delegate(object sender, ProcessEventArgs args)
             {
                 int pid = args.Pid;
                 try
@@ -43,14 +41,6 @@ namespace kaleidoscope_companion.ViewModels
 
         #region Events
 
-        protected override void OnActivate()
-        {
-        }
-
-        protected override void OnDeactivate(bool close)
-        {
-        }
-
         protected override void OnViewReady(object view)
         {
             base.OnViewReady(view);
@@ -69,7 +59,7 @@ namespace kaleidoscope_companion.ViewModels
 
         private string logs;
 
-        public string Logs
+        private string Logs
         {
             get => logs;
             set

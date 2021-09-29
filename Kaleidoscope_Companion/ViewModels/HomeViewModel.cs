@@ -5,7 +5,6 @@ using System.IO.Ports;
 using System.Windows;
 using kaleidoscope_companion.ValueConverters;
 using static System.Windows.Visibility;
-using static kaleidoscope_companion.ViewModels.HomeViewModel;
 using static kaleidoscope_companion.ViewModels.HomeViewModel.ConnectState;
 
 namespace kaleidoscope_companion.ViewModels

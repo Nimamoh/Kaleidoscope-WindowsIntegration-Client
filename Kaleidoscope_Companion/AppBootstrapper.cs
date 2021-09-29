@@ -38,19 +38,14 @@ namespace kaleidoscope_companion
 
         #region Message handling
 
-        public void Handle(ProcessOnFocus message)
+        public async Task HandleAsync(ProcessOnFocus message, CancellationToken cancellationToken)
         {
-            var logErrorHandler = _container.GetInstance<LogErrorHandler>();
             var pid = message.Pid;
-            HandleProcessOnFocusAsync(pid).SafeFireAndForget(logErrorHandler);
-        }
-
-        private async Task HandleProcessOnFocusAsync(int pid)
-        {
+            
             var layerSwitcher = _container.GetInstance<LayerSwitcher>();
             var mappings = _container.GetInstance<ISet<ApplicationLayerMapping>>();
             var processName = Process.GetProcessById(pid).ProcessName;
-
+            
             var relatedMappings =
                 mappings.Where(mapping => processName == mapping.ProcessName);
 
@@ -69,7 +64,8 @@ namespace kaleidoscope_companion
             var eventAggregator = _container.GetInstance<IEventAggregator>();
             var winApi = _container.GetInstance<WinApi>();
 
-            eventAggregator.Subscribe(this);
+            // eventAggregator.Subscribe(this);
+            eventAggregator.SubscribeOnPublishedThread(this);
 
             DisplayRootViewFor<ShellViewModel>();
 
@@ -103,16 +99,16 @@ namespace kaleidoscope_companion
             Log.Debug("Application exited...");
         }
 
-        protected void OnProcessOnForeground(object sender, ProcessEventArgs args)
+        private void OnProcessOnForeground(object sender, ProcessEventArgs args)
         {
             var eventAggregator = _container.GetInstance<IEventAggregator>();
             var pid = args.Pid;
-            eventAggregator.PublishOnUIThread(new ProcessOnFocus(pid));
+            eventAggregator.PublishOnUIThreadAsync(new ProcessOnFocus(pid));
         }
 
         #region Serial port routines
 
-        private bool stopPoller = false;
+        private bool stopPoller;
 
         private async Task TryAutoConnect()
         {
@@ -120,26 +116,21 @@ namespace kaleidoscope_companion
             var sp = keyboardSerialPort;
             var ports = SerialPort.GetPortNames();
 
-            eventAggregator.PublishOnUIThread(new PendingOnKeyboardConnect(null));
+            await eventAggregator.PublishOnUIThreadAsync(new PendingOnKeyboardConnect(null));
             foreach (var port in ports)
             {
                 await Silently(() =>  TryConnectKeyboard(sp, port));
 
                 if (!keyboardSerialPort.IsOpen) continue;
-                eventAggregator.PublishOnUIThread(new SuccessOnKeyboardConnect(port));
+                await eventAggregator.PublishOnUIThreadAsync(new SuccessOnKeyboardConnect(port));
                 break;
             }
 
             if (!keyboardSerialPort.IsOpen)
-                eventAggregator.PublishOnUIThread(new FailureOnKeyboardConnect("Cannot autoconnect"));
+                await eventAggregator.PublishOnUIThreadAsync(new FailureOnKeyboardConnect("Cannot autoconnect"));
         }
 
         private async Task PollSerialPortAsync()
-        {
-            await Task.Run(PollSerialPort);
-        }
-
-        private void PollSerialPort()
         {
             var eventAggregator = _container.GetInstance<IEventAggregator>();
             var sp = _container.GetInstance<SerialPort>();
@@ -152,22 +143,21 @@ namespace kaleidoscope_companion
             var wasPreviouslyOpened = IsSerialPortOpen();
             while (!stopPoller)
             {
-                Thread.Sleep(300);
+                await Task.Delay(3000);
                 var isCurrentlyOpened = IsSerialPortOpen();
 
                 if (wasPreviouslyOpened == isCurrentlyOpened)
                     continue;
 
                 if (isCurrentlyOpened)
-                    eventAggregator.PublishOnUIThread(new SerialPortOnline());
+                    await eventAggregator.PublishOnUIThreadAsync(new SerialPortOnline());
                 else
-                    eventAggregator.PublishOnUIThread(new SerialPortOffline());
+                    await eventAggregator.PublishOnUIThreadAsync(new SerialPortOffline());
                 wasPreviouslyOpened = isCurrentlyOpened;
             }
 
             stopPoller = false;
         }
-
         #endregion
     }
 }

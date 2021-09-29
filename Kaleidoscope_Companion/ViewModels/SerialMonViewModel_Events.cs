@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Caliburn.Micro;
 using kaleidoscope_companion.Events;
@@ -16,14 +17,16 @@ namespace kaleidoscope_companion.ViewModels
 
         #region Message processing
 
-        public void Handle(SuccessOnKeyboardConnect message)
+        public Task HandleAsync(SuccessOnKeyboardConnect message, CancellationToken cancellationToken)
         {
             CanSendToKeyboard = true;
+            return Task.CompletedTask;
         }
 
-        public void Handle(SerialPortOffline message)
+        public Task HandleAsync(SerialPortOffline message, CancellationToken cancellationToken)
         {
             CanSendToKeyboard = false;
+            return Task.CompletedTask;
         }
 
         #endregion
@@ -50,16 +53,16 @@ namespace kaleidoscope_companion.ViewModels
 
         #region Lifecycle
 
-        protected override void OnActivate()
+        protected override async Task OnActivateAsync(CancellationToken cancellationToken)
         {
-            eventAggregator.Subscribe(this);
-            base.OnActivate();
+            eventAggregator.SubscribeOnPublishedThread(this);
+            await base.OnActivateAsync(cancellationToken);
         }
 
-        protected override void OnDeactivate(bool close)
+        protected override async Task OnDeactivateAsync(bool close, CancellationToken cancellationToken)
         {
             eventAggregator.Unsubscribe(this);
-            base.OnDeactivate(close);
+            await base.OnDeactivateAsync(close, cancellationToken);
         }
 
         protected override void OnViewAttached(object view, object context)

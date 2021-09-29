@@ -1,4 +1,6 @@
-﻿namespace kaleidoscope_companion.ViewModels
+﻿using System.Threading.Tasks;
+
+namespace kaleidoscope_companion.ViewModels
 {
     public partial class ShellViewModel
     {
@@ -13,53 +15,52 @@
          * XXX: If you see any problem with menu selection, make sure this enum is correctly reflecting
          * the view and don't forget to update SelectedMenuIndex.
          */
-        private enum MENUINDEX
+        private enum Menuindex
         {
-            HOME,
-            CONF,
-            SETTINGS,
-            SERIAL_MON,
-            DEBUG
+            Home,
+            Conf,
+            Settings,
+            SerialMon,
+            Debug
         }
-        public void NavToHome()
+        public async Task NavToHome()
         {
             if (ActiveItem is HomeViewModel) return;
-            ActivateItem(homeViewModel);
+            await ActivateItemAsync(homeViewModel);
 
-            SelectedMenuIndex = (int) MENUINDEX.HOME;
+            SelectedMenuIndex = (int) Menuindex.Home;
         }
 
-        public void NavToConf()
+        public async Task NavToConf()
         {
             if (ActiveItem is ConfigureViewModel) return;
-            ActivateItem(configureViewModel);
+            await ActivateItemAsync(configureViewModel);
             
-            SelectedMenuIndex = (int) MENUINDEX.CONF;
+            SelectedMenuIndex = (int) Menuindex.Conf;
         }
 
-        public void NavToSettings()
+        public async Task NavToSettings()
         {
             if (ActiveItem is SettingsViewModel) return;
-            ActivateItem(settingsViewModel);
+            await ActivateItemAsync(settingsViewModel);
             
-            SelectedMenuIndex = (int) MENUINDEX.SETTINGS;
+            SelectedMenuIndex = (int) Menuindex.Settings;
         }
 
-        public void NavToSerialMon()
+        public async Task NavToSerialMon()
         {
             if (ActiveItem is SerialMonViewModel) return;
-            ActivateItem(serialMonViewModel);
+            await ActivateItemAsync(serialMonViewModel);
             
-            
-            SelectedMenuIndex = (int) MENUINDEX.SERIAL_MON;
+            SelectedMenuIndex = (int) Menuindex.SerialMon;
         }
 
-        public void NavToDebug()
+        public async Task NavToDebug()
         {
             if (ActiveItem is DebugViewModel) return;
-            ActivateItem(debugViewModel);
+            await ActivateItemAsync(debugViewModel);
             
-            SelectedMenuIndex = (int) MENUINDEX.DEBUG;
+            SelectedMenuIndex = (int) Menuindex.Debug;
         }
     }
 }

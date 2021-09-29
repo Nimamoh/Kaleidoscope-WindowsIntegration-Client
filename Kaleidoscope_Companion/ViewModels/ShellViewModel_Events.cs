@@ -1,5 +1,8 @@
-﻿using Caliburn.Micro;
+﻿using System.Threading;
+using System.Threading.Tasks;
+using Caliburn.Micro;
 using kaleidoscope_companion.Events;
+using kaleidoscope_companion.Helpers;
 
 namespace kaleidoscope_companion.ViewModels
 {
@@ -10,21 +13,23 @@ namespace kaleidoscope_companion.ViewModels
 
         #region Lifecycle
 
-        protected override void OnActivate()
+        protected override Task OnActivateAsync(CancellationToken cancellationToken)
         {
-            eventAggregator.Subscribe(this);
+            eventAggregator.SubscribeOnPublishedThread(this);
+            return Task.CompletedTask;
         }
 
-        protected override void OnDeactivate(bool close)
+        protected override Task OnDeactivateAsync(bool close, CancellationToken cancellationToken)
         {
             eventAggregator.Unsubscribe(this);
+            return Task.CompletedTask;
         }
 
         protected override void OnViewLoaded(object view)
         {
             CanNavToHome = true;
             CanNavToSerialMon = keyboardSerialPort?.IsOpen ?? false;
-            NavToHome();
+            Task.Run(NavToHome);
         }
 
         #endregion
@@ -46,7 +51,7 @@ namespace kaleidoscope_companion.ViewModels
 
         #region Message processing
 
-        public void Handle(SuccessOnKeyboardConnect message)
+        public async Task HandleAsync(SuccessOnKeyboardConnect message, CancellationToken cancellationToken)
         {
             var portName = message.PortName;
             ConnectedPort = portName;
@@ -54,14 +59,14 @@ namespace kaleidoscope_companion.ViewModels
             CanNavToSerialMon = true;
             CanNavToConf = true;
             
-            NavToConf(); // automatically navigate to configuration when connected
+            await NavToConf(); // automatically navigate to configuration when connected
         }
 
-        public void Handle(SerialPortOffline message)
+        public async Task HandleAsync(SerialPortOffline message, CancellationToken cancellationToken)
         {
             ConnectedPort = NotConnectedStatusBarMessage;
 
-            NavToHome();
+            await NavToHome();
             CanNavToSerialMon = false;
             CanNavToConf = false;
         }
