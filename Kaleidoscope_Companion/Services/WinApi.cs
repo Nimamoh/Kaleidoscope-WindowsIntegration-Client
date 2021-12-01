@@ -169,7 +169,7 @@ namespace kaleidoscope_companion.Services
                 string path = app.Properties?.System?.Link?.TargetParsingPath?.Value;
 
                 if (path?.Contains(".exe") ?? false) // filter out non executable items
-                    yield return new ApplicationMetaInf(name, icon, path);
+                    yield return ApplicationMetaInf.Construct(name, icon, path);
             }
 
             Log.Debug("Listed installed apps...");

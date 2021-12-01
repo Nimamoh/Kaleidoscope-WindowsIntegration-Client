@@ -11,7 +11,7 @@
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
 
              mc:Ignorable="d"
-             d:DesignHeight="300" d:DesignWidth="300">
+             d:DesignHeight="600" d:DesignWidth="600">
     <!-- <Grid ShowGridLines="True"> -->
     <Grid>
         <Grid.RowDefinitions>
@@ -89,6 +89,7 @@
                 <RowDefinition />
                 <RowDefinition />
                 <RowDefinition />
+                <RowDefinition />
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition />
@@ -99,32 +100,53 @@
 
             <StackPanel
                 Grid.Row="0" Grid.Column="0" Margin="0 0 10 0">
-                <ComboBox
-                    ItemsSource="{Binding InstalledApps}"
-                    SelectedIndex="{Binding AppLayerMappingInEdition.SelectedApp}"
-                    VerticalAlignment="Center" HorizontalAlignment="Right"
-                    MinWidth="100">
-                    <ComboBox.ItemTemplate>
-                        <DataTemplate>
-                            <StackPanel Orientation="Horizontal">
-                                <Image Source="{Binding Icon}" MaxWidth="20" MaxHeight="20" Margin="0 0 10 0"
-                                       VerticalAlignment="Center" />
-                                <TextBlock Text="{Binding Name}" Margin="0 0 20 0" VerticalAlignment="Center" />
-                            </StackPanel>
-                        </DataTemplate>
-                    </ComboBox.ItemTemplate>
-                </ComboBox>
+
+                <Grid Margin="0 0 0 0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition></ColumnDefinition>
+                        <ColumnDefinition></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+
+                    <ComboBox
+                        ItemsSource="{Binding InstalledApps}"
+                        SelectedIndex="{Binding AppLayerMappingInEdition.SelectedApp}"
+                        VerticalAlignment="Center" HorizontalAlignment="Right"
+                        MinWidth="20">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <Image Source="{Binding Icon}" MaxWidth="20" MaxHeight="20" Margin="0 0 10 0"
+                                           VerticalAlignment="Center" />
+                                    <TextBlock Text="{Binding Name}" Margin="0 0 20 0" VerticalAlignment="Center" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+
+                    <Border Padding="10 0 0 0" Grid.Column="1">
+                        <TextBlock FontSize="10" Foreground="Gray"
+                               VerticalAlignment="Center">
+                        Or
+                        <TextBlock cal:Message.Attach="[Event PreviewMouseDown] = [Action ChooseCustomExe()]">
+                            <Hyperlink>choose...</Hyperlink>
+                        </TextBlock>
+                    </TextBlock>
+                    </Border>
+                    
+                </Grid>
+
             </StackPanel>
 
             <StackPanel
                 Grid.Row="1" Grid.Column="0"
                 Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
-                <TextBlock FontSize="10" Foreground="Gray">
-                    Or
-                    <TextBlock cal:Message.Attach="[Event PreviewMouseDown] = [Action ChooseCustomExe()]">
-                        <Hyperlink>choose...</Hyperlink>
-                    </TextBlock>
+
+                <TextBlock FontSize="10" Foreground="Gray" HorizontalAlignment="Left" VerticalAlignment="Center" Padding="0 0 10 0">
+                    Or type 
                 </TextBlock>
+                <TextBox FontSize="10" Foreground="Gray" MinWidth="50"
+                         cal:Message.Attach="[Event KeyDown] = [Action HandleTypingProcessName($eventArgs)]"
+                         x:Name="TypingProcessName" />
             </StackPanel>
 
             <materialDesign:PackIcon
@@ -148,7 +170,7 @@
 
             <TextBlock
                 FontStyle="Italic" Foreground="Gray"
-                Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" TextAlignment="Center"
+                Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3" TextAlignment="Center"
                 Text="{Binding HelpInEditing}" />
 
         </Grid>
