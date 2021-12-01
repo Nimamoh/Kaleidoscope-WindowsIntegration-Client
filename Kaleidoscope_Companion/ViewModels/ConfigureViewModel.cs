@@ -61,6 +61,18 @@ namespace kaleidoscope_companion.ViewModels
             }
         }
 
+        private string typingProcessName;
+
+        public string TypingProcessName
+        {
+            get => typingProcessName;
+            set
+            {
+                typingProcessName = value;
+                NotifyOfPropertyChange(nameof(TypingProcessName));
+            }
+        }
+
         public ObservableCollection<AppLayerMappingItem> AppLayerMappings { get; } =
             new ObservableCollection<AppLayerMappingItem>();
 
@@ -122,7 +134,7 @@ namespace kaleidoscope_companion.ViewModels
                 var metaInf = InstalledApps.FirstOrDefault(meta => meta.ImageName == mapping.ProcessName);
                 if (metaInf == null && mapping.ExePath != null)
                 {
-                    var computedMetaInf = new ApplicationMetaInf(mapping.ExePath);
+                    var computedMetaInf = ApplicationMetaInf.FromExecutablePathOnly(mapping.ExePath);
                     InstalledApps.AddOrReplaceOnUniqueImageName(computedMetaInf); // Update installed apps
                     metaInf = computedMetaInf;
                 }

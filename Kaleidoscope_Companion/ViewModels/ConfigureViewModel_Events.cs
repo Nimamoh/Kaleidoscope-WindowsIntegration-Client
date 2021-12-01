@@ -1,7 +1,8 @@
-﻿using kaleidoscope_companion.Models;
+﻿using System.Windows.Input;
+using kaleidoscope_companion.Models;
 using log4net;
-using Microsoft.Win32;
 using static kaleidoscope_companion.Helpers.ErrorMangementHelper;
+using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
 
 namespace kaleidoscope_companion.ViewModels
 {
@@ -78,10 +79,23 @@ namespace kaleidoscope_companion.ViewModels
                 return;
 
             var path = ofd.FileName;
-            var metaInf = new ApplicationMetaInf(path);
+            var metaInf = ApplicationMetaInf.FromExecutablePathOnly(path);
 
             InstalledApps.AddOrReplaceOnUniqueImageName(metaInf);
             AppLayerMappingInEdition.SelectedApp = InstalledApps.IndexOf(metaInf);
+        }
+
+        public void HandleTypingProcessName(System.Windows.Input.KeyEventArgs keyEventArgs)
+        {
+            if (keyEventArgs != null && keyEventArgs.Key == Key.Enter)
+            {
+                var metaInf = ApplicationMetaInf.FromImageNameOnly(TypingProcessName);
+                
+                InstalledApps.AddOrReplaceOnUniqueImageName(metaInf);
+                AppLayerMappingInEdition.SelectedApp = InstalledApps.IndexOf(metaInf);
+
+                TypingProcessName = "";
+            }
         }
 
         private AppLayerMappingItem EditionToMapping(EditableAppLayerMapping inEdition)
