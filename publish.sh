@@ -14,8 +14,8 @@ X64_ZIP_NAME=Kaleidoscope-Companion-win-x64-$version.zip
 X86_ZIP_NAME=Kaleidoscope-Companion-win-x86-$version.zip
 
 # Autonomous
-cd Kaleidoscope_Companion && dotnet.exe publish -p:PublishSingleFile=true -r win-x64 -c Release; cd ..
-cd Kaleidoscope_Companion && dotnet.exe publish -p:PublishSingleFile=true -r win-x86 -c Release; cd ..
+cd Kaleidoscope_Companion && dotnet.exe publish -p:PublishSingleFile=true -p:IncludeAllContentForSelfExtract=true -r win-x64 -c Release; cd ..
+cd Kaleidoscope_Companion && dotnet.exe publish -p:PublishSingleFile=true -p:IncludeAllContentForSelfExtract=true -r win-x86 -c Release; cd ..
 
 rm "$X64_AUTONOMOUS_ZIP_NAME" || true
 zip -r -j "$X64_AUTONOMOUS_ZIP_NAME" Kaleidoscope_Companion/bin/Release/net5.0-windows/win-x64/publish/
@@ -26,8 +26,8 @@ zip -r -j "$X86_AUTONOMOUS_ZIP_NAME" Kaleidoscope_Companion/bin/Release/net5.0-w
 rm -rf Kaleidoscope_Companion/bin
 
 # Platform dependent
-cd Kaleidoscope_Companion && dotnet.exe publish -p:PublishSingleFile=true -r win-x64 -c Release --self-contained false; cd ..
-cd Kaleidoscope_Companion && dotnet.exe publish -p:PublishSingleFile=true -r win-x86 -c Release --self-contained false; cd ..
+cd Kaleidoscope_Companion && dotnet.exe publish -p:PublishSingleFile=true -p:IncludeAllContentForSelfExtract=true -r win-x64 -c Release --self-contained false; cd ..
+cd Kaleidoscope_Companion && dotnet.exe publish -p:PublishSingleFile=true -p:IncludeAllContentForSelfExtract=true -r win-x86 -c Release --self-contained false; cd ..
     
 rm "$X64_ZIP_NAME" || true
 zip -r -j "$X64_ZIP_NAME" Kaleidoscope_Companion/bin/Release/net5.0-windows/win-x64/publish
