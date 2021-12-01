@@ -17,10 +17,10 @@ X86_ZIP_NAME=Kaleidoscope-Companion-win-x86-$version.zip
 cd Kaleidoscope_Companion && dotnet.exe publish -p:PublishSingleFile=true -p:IncludeAllContentForSelfExtract=true -r win-x64 -c Release; cd ..
 cd Kaleidoscope_Companion && dotnet.exe publish -p:PublishSingleFile=true -p:IncludeAllContentForSelfExtract=true -r win-x86 -c Release; cd ..
 
-rm "$X64_AUTONOMOUS_ZIP_NAME" || true
+rm "$X64_AUTONOMOUS_ZIP_NAME" || true 1>/dev/null 2>&1
 zip -r -j "$X64_AUTONOMOUS_ZIP_NAME" Kaleidoscope_Companion/bin/Release/net5.0-windows/win-x64/publish/
 
-rm "$X86_AUTONOMOUS_ZIP_NAME" || true
+rm "$X86_AUTONOMOUS_ZIP_NAME" || true 1>/dev/null 2>&1
 zip -r -j "$X86_AUTONOMOUS_ZIP_NAME" Kaleidoscope_Companion/bin/Release/net5.0-windows/win-x86/publish/
 
 rm -rf Kaleidoscope_Companion/bin
@@ -29,10 +29,10 @@ rm -rf Kaleidoscope_Companion/bin
 cd Kaleidoscope_Companion && dotnet.exe publish -p:PublishSingleFile=true -p:IncludeAllContentForSelfExtract=true -r win-x64 -c Release --self-contained false; cd ..
 cd Kaleidoscope_Companion && dotnet.exe publish -p:PublishSingleFile=true -p:IncludeAllContentForSelfExtract=true -r win-x86 -c Release --self-contained false; cd ..
     
-rm "$X64_ZIP_NAME" || true
+rm "$X64_ZIP_NAME" || true 1>/dev/null 2>&1
 zip -r -j "$X64_ZIP_NAME" Kaleidoscope_Companion/bin/Release/net5.0-windows/win-x64/publish
 
-rm "$X86_ZIP_NAME" || true
+rm "$X86_ZIP_NAME" || true 1>/dev/null 2>&1
 zip -r -j "$X86_ZIP_NAME" Kaleidoscope_Companion/bin/Release/net5.0-windows/win-x86/publish
 
 git tag -d $version || true
